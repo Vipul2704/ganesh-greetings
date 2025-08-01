@@ -294,7 +294,8 @@
             
             // Create a simple share link that works locally
             const baseURL = 'https://vipul2704.github.io/ganesh-greetings/?name=Ravi&amount=500&show=greeting';
-            const shareURL = `${baseURL}?name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}&show=greeting`;
+            const shareURL = `${baseURL}#name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}&show=greeting`;
+
             
             // Show simple QR code using Google Charts (reliable)
             document.getElementById('qrcode').innerHTML = `
@@ -354,15 +355,15 @@
 
         // Check if URL has greeting parameters (when link is opened)
         function checkURLParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const name = urlParams.get('name');
-            const amount = urlParams.get('amount');
-            const show = urlParams.get('show');
+            const hashParams = new URLSearchParams(window.location.hash.slice(1));
+            const name = hashParams.get('name');
+            const amount = hashParams.get('amount');
+            const show = hashParams.get('show');
             
             if (show === 'greeting' && name && amount) {
-                showGreeting(name, amount);
+            showGreeting(name, amount);
             }
-        }
+    }
 
         // Check URL parameters when page loads
         window.onload = function() {
