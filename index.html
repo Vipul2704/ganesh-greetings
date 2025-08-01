@@ -279,100 +279,90 @@
     </div>
 
     <script>
-        let currentData = {};
+    let currentData = {};
 
-        function generateGreeting() {
-            const name = document.getElementById('personName').value.trim();
-            const amount = document.getElementById('donationAmount').value.trim();
-            
-            if (!name || !amount) {
-                alert('Please fill in both name and donation amount');
-                return;
-            }
+    function generateGreeting() {
+        const name = document.getElementById('personName').value.trim();
+        const amount = document.getElementById('donationAmount').value.trim();
 
-            currentData = { name, amount };
-            
-            // Create a simple share link that works locally
-            const baseURL = 'https://vipul2704.github.io/ganesh-greetings/#name=Ravi&amount=500&show=greeting';
-            const shareURL = `${baseURL}#name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}&show=greeting`;
-
-            
-            // Show simple QR code using Google Charts (reliable)
-            document.getElementById('qrcode').innerHTML = `
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff6b35&bgcolor=ffffff&data=${encodeURIComponent(shareURL)}" 
-                     style="width: 200px; height: 200px;" 
-                     alt="QR Code"
-                     onerror="this.style.display='none'; document.getElementById('qrError').style.display='block';">
-                <div id="qrError" style="display:none; padding: 20px;">
-                    <p>QR Code could not load</p>
-                    <p>Please use the link below instead</p>
-                </div>
-            `;
-            
-            // Show share link
-            document.getElementById('shareLink').textContent = shareURL;
-            
-            // Show QR section
-            document.getElementById('displayName').textContent = name;
-            document.getElementById('mainForm').style.display = 'none';
-            document.getElementById('qrSection').style.display = 'block';
+        if (!name || !amount) {
+            alert('Please fill in both name and donation amount');
+            return;
         }
 
-        function copyLink() {
-            const link = document.getElementById('shareLink').textContent;
-            navigator.clipboard.writeText(link).then(() => {
-                alert('Link copied to clipboard!');
-            }).catch(() => {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = link;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                alert('Link copied to clipboard!');
-            });
+        currentData = { name, amount };
+
+        const baseURL = 'https://vipul2704.github.io/ganesh-greetings/';
+        const shareURL = `${baseURL}#name=${encodeURIComponent(name)}&amount=${encodeURIComponent(amount)}&show=greeting`;
+
+        document.getElementById('qrcode').innerHTML = `
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&color=ff6b35&bgcolor=ffffff&data=${encodeURIComponent(shareURL)}"
+                 style="width: 200px; height: 200px;" 
+                 alt="QR Code">
+        `;
+
+        document.getElementById('shareLink').textContent = shareURL;
+        document.getElementById('displayName').textContent = name;
+
+        document.getElementById('mainForm').style.display = 'none';
+        document.getElementById('qrSection').style.display = 'block';
+    }
+
+    function copyLink() {
+        const link = document.getElementById('shareLink').textContent;
+        navigator.clipboard.writeText(link).then(() => {
+            alert('Link copied to clipboard!');
+        }).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = link;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert('Link copied to clipboard!');
+        });
+    }
+
+    function goBack() {
+        document.getElementById('qrSection').style.display = 'none';
+        document.getElementById('mainForm').style.display = 'block';
+        document.getElementById('personName').value = '';
+        document.getElementById('donationAmount').value = '';
+    }
+
+    function showMainForm() {
+        document.getElementById('greetingPage').style.display = 'none';
+        document.getElementById('mainForm').style.display = 'block';
+        window.location.hash = ''; // Clear hash
+    }
+
+    function showGreeting(name, amount) {
+        document.getElementById('greetPersonName').textContent = name;
+        document.getElementById('greetAmount').textContent = amount;
+
+        document.querySelector('.container').style.display = 'none';
+        document.getElementById('greetingPage').style.display = 'block';
+    }
+
+    function checkURLParams() {
+        const hash = window.location.hash;
+        if (!hash) return;
+
+        const params = new URLSearchParams(hash.slice(1));
+        const name = params.get('name');
+        const amount = params.get('amount');
+        const show = params.get('show');
+
+        if (show === 'greeting' && name && amount) {
+            showGreeting(name, amount);
         }
+    }
 
-        function goBack() {
-            document.getElementById('qrSection').style.display = 'none';
-            document.getElementById('mainForm').style.display = 'block';
-        }
+    // Call this BEFORE anything else
+    document.addEventListener('DOMContentLoaded', function () {
+        checkURLParams();
+    });
+</script>
 
-        function showMainForm() {
-            document.getElementById('greetingPage').style.display = 'none';
-            document.getElementById('mainForm').style.display = 'block';
-            // Clear the URL hash
-            window.location.hash = '';
-        }
-
-        function showGreeting(name, amount) {
-            document.getElementById('greetPersonName').textContent = name;
-            document.getElementById('greetAmount').textContent = amount;
-            document.querySelector('.container').style.display = 'none';
-            document.getElementById('greetingPage').style.display = 'block';
-        }
-
-        // Check if URL has greeting parameters (when link is opened)
-        function checkURLParams() {
-            const hash = window.location.hash;
-            if (!hash) return;
-
-            const params = new URLSearchParams(hash.slice(1));
-            const name = params.get('name');
-            const amount = params.get('amount');
-            const show = params.get('show');
-
-            if (show === 'greeting' && name && amount) {
-                showGreeting(name, amount);
-            }
-        }
-
-
-        // Check URL parameters when page loads
-        window.onload = function() {
-            checkURLParams();
-        };
-    </script>
 </body>
 </html>
