@@ -342,8 +342,8 @@
         function showMainForm() {
             document.getElementById('greetingPage').style.display = 'none';
             document.getElementById('mainForm').style.display = 'block';
-            // Clear the URL parameters
-            window.history.replaceState({}, document.title, window.location.pathname);
+            // Clear the URL hash
+            window.location.hash = '';
         }
 
         function showGreeting(name, amount) {
@@ -355,15 +355,19 @@
 
         // Check if URL has greeting parameters (when link is opened)
         function checkURLParams() {
-            const hashParams = new URLSearchParams(window.location.hash.slice(1));
-            const name = hashParams.get('name');
-            const amount = hashParams.get('amount');
-            const show = hashParams.get('show');
-            
+            const hash = window.location.hash;
+            if (!hash) return;
+
+            const params = new URLSearchParams(hash.slice(1));
+            const name = params.get('name');
+            const amount = params.get('amount');
+            const show = params.get('show');
+
             if (show === 'greeting' && name && amount) {
-            showGreeting(name, amount);
+                showGreeting(name, amount);
             }
-    }
+        }
+
 
         // Check URL parameters when page loads
         window.onload = function() {
